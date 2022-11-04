@@ -1,3 +1,4 @@
+########## I did not create this function, a colleague found it and passed it along to me #########################
 from scipy.ndimage.interpolation import rotate
 
 #function to rotate data
