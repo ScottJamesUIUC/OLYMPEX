@@ -1,5 +1,6 @@
 # OLYMPEX
 All work related to my MS thesis on OLYMPEX (work in progress)
+All Notebooks still need to be cleaned up and prepared for general use.
 
 Model data is currently unavailable and will be processed along with model namelist in the future.
 
