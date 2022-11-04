@@ -49,6 +49,7 @@ tot_precip = rainc + rainnc + rainsh
 
 #get the lat/lon coordinates from the model output
 lats, lons = latlon_coords(rainc)
+#################################################################################################
 
 #create numpy array of indices for each mask region. (mask regions created in ARC GIS)
 large_cfdd =  np.array([[-125.230193164361,46.350249762460],[-123.152180945193, 47.504266855703],
@@ -73,6 +74,7 @@ regions = regionmask.Regions([large_cfdd, NPOL_cfad, MID_cfad, UPSTREAM_cfad, FA
 
 #apply region mask to total precip arrays using lat and longitude
 all_times_mask = regions.mask_3D(tot_precip.XLONG, tot_precip.XLAT)
+#################################################################################################
 
 #diff does the difference between each file which is 5-minutes, then resample to 15-min for other possible analysis
 precip_5min_all_times = tot_precip.diff('Time')
@@ -88,6 +90,7 @@ NPOL_precip_5min = drop_zeroes_precip_5min.where(all_times_mask.sel(region=1))
 MID_precip_5min = drop_zeroes_precip_5min.where(all_times_mask.sel(region=2))
 UPSTREAM_precip_5min = drop_zeroes_precip_5min.where(all_times_mask.sel(region=3))
 FAR_precip_5min = drop_zeroes_precip_5min.where(all_times_mask.sel(region=4))
+#################################################################################################
 
 # bins for the histogram and for plotting
 dist_bins = np.arange(0,587,1)
@@ -219,6 +222,7 @@ for ax in axs.flat:
     
 plt.tight_layout()
 fig.colorbar(im, ax=axs, pad=0.01)
+#################################################################################################
 
 # compute weighted average of precipitation across each of the masked regions
 weights = np.cos(np.deg2rad(large_precip_5min.XLAT))
