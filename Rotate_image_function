@@ -1,0 +1,122 @@
+from scipy.ndimage.interpolation import rotate
+
+#function to rotate data
+def rotate_image(img, degrees, output_scale="crop"):
+
+    """
+
+    Rotate numpy arrays by specified degrees
+
+    """
+
+ 
+
+    assert output_scale in ["crop", "full"], "output_scale should be either 'crop' or 'full'"
+
+    #  convert rotation amount to radian
+
+    rot_rad = degrees * np.pi / 180.0
+
+    rotate_m = np.array([[np.cos(rot_rad), np.sin(rot_rad)],
+
+                         [- np.sin(rot_rad), np.cos(rot_rad)]])
+
+ 
+
+    # If output_scale = "full", the image must be inserted into a bigger frame, so the coordinates would be translated
+
+    # appropriately.
+
+    gray_scale = False
+
+    if len(img.shape) < 3:
+
+        img = img.values.reshape(*img.shape, 1)
+
+        gray_scale = True
+
+ 
+
+    h, w, c = img.shape
+
+    if output_scale == "full":
+
+        diagonal = int(np.sqrt(h * h + w * w))   # Pytagoras theorm - the diagonal is the longest line in the rectangle
+
+        im_padded = np.zeros((diagonal, diagonal, c))
+
+        center_h = int((diagonal - h) // 2)
+
+        center_w = int((diagonal - w) // 2)
+
+        im_padded[center_h:-center_h, center_w:-center_w, :] = img
+
+        img = im_padded
+
+        rotated_image = np.zeros((diagonal, diagonal, c))
+
+        h, w, c = img.shape
+
+    else:
+
+        rotated_image = np.zeros((h, w, c))
+
+        rotated_image[:] = -999
+
+ 
+
+    # Rotate and shift the indices, from PICTURE to SOURCE (and NOT the intuitive way)
+
+    indices_org = np.array(np.meshgrid(np.arange(h), np.arange(w))).reshape(2, -1)
+
+    indices_new = indices_org.copy()
+
+    indices_new = np.dot(rotate_m, indices_new).astype(int)   # Apply the affineWrap
+
+    mu1 = np.mean(indices_new, axis=1).astype(int).reshape((-1, 1))
+
+    mu2 = np.mean(indices_org, axis=1).astype(int).reshape((-1, 1))
+
+    indices_new += (mu2-mu1)   # Shift the image back to the center
+
+ 
+
+    # Remove the pixels in the rotated image, that are now out of the bounds of the result image
+
+    # (Note that the result image is a rectangle of shape (h,w,c) that the rotated image is inserted into, so in the
+
+    # case of a "full" output_scale, these are just black pixels from the padded image...).
+
+    t0, t1 = indices_new
+
+    t0 = (0 <= t0) & (t0 < h)
+
+    t1 = (0 <= t1) & (t1 < w)
+
+    valid = t0 & t1
+
+    indices_new = indices_new.T[valid].T
+
+    indices_org = indices_org.T[valid].T
+
+ 
+
+    #
+
+    xind, yind = indices_new
+
+    xi, yi = indices_org
+
+    rotated_image[xi, yi, :] = img[xind, yind, :]
+
+ 
+
+    if gray_scale:
+
+        rotated_image = rotated_image.reshape((h, w))
+
+        rotated_image[rotated_image==-999] = np.nan
+
+ 
+
+    return rotated_image
