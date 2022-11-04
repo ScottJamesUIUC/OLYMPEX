@@ -14,3 +14,11 @@ Model domain locations over Olympic Peninsula.
 
 Innermost 2 domains (1 and .333-km) with mask regions used in spatial analysis.
 
+
+Distribution analysis of surface precipitation across masked regions above.
+
+![image](https://user-images.githubusercontent.com/96263008/200063327-b434e39c-49b8-4cc1-a187-8fee941d7bd1.png)
+
+Differencing plot of surface precipitation across same masked regions.
+
+![image](https://user-images.githubusercontent.com/96263008/200063413-a94dea3d-85eb-4090-a393-46f7480bed6c.png)
